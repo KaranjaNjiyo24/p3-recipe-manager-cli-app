@@ -34,3 +34,18 @@ def add_user():
     session.commit()
     print(f"User '{username}' added successfully!\n")
     session.close()
+
+def view_users():
+    session = Session()
+    print("\n--- All Users ---")
+    users = session.query(User).all()
+
+    if not users:
+        print("No users found! Add some users first.\n")
+        session.close()
+        return
+
+    print("ID\tUsername\tEmail")
+    for user in users:
+        print(f"{user.id}\t{user.username}\t{user.email or 'N/A'}")
+    session.close()
