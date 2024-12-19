@@ -1,11 +1,11 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models1 import Base, User, Recipe, Ingredient, RecipeIngredient
+from models import Base, User, Recipe, Ingredient, RecipeIngredient
 
 DATABASE_URL = "sqlite:///recipes.db"
 engine = create_engine(DATABASE_URL)
-session = Session()
+session = sessionmaker(bind=engine)
 
 def create_database():
     if not os.path.exists("recipes.db"):
@@ -97,4 +97,19 @@ def view_recipes():
     for recipe in recipes:
         user = recipe.user.username if recipe.user else "N/A"
         print(f"{recipe.id}\t{recipe.name}\t{recipe.prep_time}\t{recipe.cook_time}\t{recipe.servings}\t{user}")
+    session.close()
+
+def view_ingredients():
+    session = Session()
+    print("\n--- All Ingredients ---")
+    ingredients = session.query(Ingredient).all()
+
+    if not ingredients:
+        print("No ingredients found!\n")
+        session.close()
+        return
+
+    print("ID\tName")
+    for ingredient in ingredients:
+        print(f"{ingredient.id}\t{ingredient.name}")
     session.close()
