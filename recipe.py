@@ -22,3 +22,15 @@ def get_user_input(prompt, required=True, input_type=str):
             return input_type(user_input)
         except ValueError:
             print(f"Invalid input. Please enter a valid {input_type.__name__}.")
+
+def add_user():
+    session = Session()
+    print("\n--- Add a New User ---")
+    username = get_user_input("Username: ")
+    email = get_user_input("Email: ", required=False)
+
+    new_user = User(username=username, email=email)
+    session.add(new_user)
+    session.commit()
+    print(f"User '{username}' added successfully!\n")
+    session.close()
