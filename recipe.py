@@ -113,3 +113,36 @@ def view_ingredients():
     for ingredient in ingredients:
         print(f"{ingredient.id}\t{ingredient.name}")
     session.close()
+
+def view_recipe_details():
+    session = Session()
+    print("\n--- View Recipe Details ---")
+    recipes = session.query(Recipe).all()
+    if not recipes:
+        print("No recipes found! Add some recipes first.\n")
+        session.close()
+        return
+
+    print("Select a Recipe by ID:")
+    for recipe in recipes:
+        print(f"{recipe.id}: {recipe.name}")
+
+    recipe_id = get_user_input("Recipe ID: ", input_type=int)
+    recipe = session.query(Recipe).get(recipe_id)
+    if not recipe:
+        print(f"Recipe with ID {recipe_id} not found.\n")
+        session.close()
+        return
+
+    print(f"\nRecipe Name: {recipe.name}")
+    print(f"Description: {recipe.description or 'No description provided'}")
+    print(f"Preparation Time: {recipe.prep_time} minutes")
+    print(f"Cooking Time: {recipe.cook_time} minutes")
+    print(f"Servings: {recipe.servings}")
+    print(f"Created By: {recipe.user.username}")
+    print("\nIngredients:")
+    print("Ingredient Name\tQuantity\tUnit")
+    for recipe_ingredient in session.query(RecipeIngredient).filter_by(recipe_id=recipe.id).all():
+        ingredient = session.query(Ingredient).get(recipe_ingredient.ingredient_id)
+        print(f"{ingredient.name}\t{recipe_ingredient.quantity}\t{recipe_ingredient.unit}")
+    session.close()
