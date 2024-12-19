@@ -25,3 +25,11 @@ class Recipe(Base):
 
     user = relationship('User', back_populates='recipes')
     ingredients = relationship('Ingredient', secondary='recipe_ingredients', back_populates='recipes')
+
+# Ingredient Model
+class Ingredient(Base):
+    __tablename__ = 'ingredients'
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+
+    recipes = relationship('Recipe', secondary='recipe_ingredients', back_populates='ingredients')
