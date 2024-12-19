@@ -33,3 +33,11 @@ class Ingredient(Base):
     name = Column(String, unique=True, nullable=False)
 
     recipes = relationship('Recipe', secondary='recipe_ingredients', back_populates='ingredients')
+
+# Association Table for Many-to-Many Relationship
+class RecipeIngredient(Base):
+    __tablename__ = 'recipe_ingredients'
+    recipe_id = Column(Integer, ForeignKey('recipes.id'), primary_key=True)
+    ingredient_id = Column(Integer, ForeignKey('ingredients.id'), primary_key=True)
+    quantity = Column(Float, nullable=False)
+    unit = Column(String, nullable=False)
