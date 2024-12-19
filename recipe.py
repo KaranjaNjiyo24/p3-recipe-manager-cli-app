@@ -5,7 +5,7 @@ from models import Base, User, Recipe, Ingredient, RecipeIngredient
 
 DATABASE_URL = "sqlite:///recipes.db"
 engine = create_engine(DATABASE_URL)
-session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine)
 
 def create_database():
     if not os.path.exists("recipes.db"):
@@ -54,6 +54,7 @@ def add_recipe():
     session = Session()
     print("\n--- Add a New Recipe ---")
     
+    # Select User
     users = session.query(User).all()
     if not users:
         print("No users found! Add a user first.\n")
@@ -71,14 +72,46 @@ def add_recipe():
         session.close()
         return
 
+    # Collect recipe details
     name = get_user_input("Recipe Name: ")
     description = get_user_input("Description (optional): ", required=False)
     prep_time = get_user_input("Preparation Time (in minutes): ", input_type=int)
     cook_time = get_user_input("Cooking Time (in minutes): ", input_type=int)
     servings = get_user_input("Number of Servings: ", input_type=int)
 
+    # Add ingredients
+    print("\n--- Add Ingredients ---")
+    ingredients = []
+    while True:
+        ingredient_name = get_user_input("Ingredient Name (or type 'done' to finish): ", required=False)
+        if ingredient_name.lower() == 'done':
+            break
+        quantity = get_user_input("Quantity: ", input_type=float)
+        unit = get_user_input("Unit: ")
+
+        # Check if ingredient already exists
+        ingredient = session.query(Ingredient).filter_by(name=ingredient_name).first()
+        if not ingredient:
+            ingredient = Ingredient(name=ingredient_name)
+            session.add(ingredient)
+            session.commit()
+
+        ingredients.append({"ingredient": ingredient, "quantity": quantity, "unit": unit})
+
+    # Save recipe to the database
     new_recipe = Recipe(name=name, description=description, prep_time=prep_time, cook_time=cook_time, servings=servings, user=user)
     session.add(new_recipe)
+    session.commit()
+
+    for item in ingredients:
+        recipe_ingredient = RecipeIngredient(
+            recipe_id=new_recipe.id,
+            ingredient_id=item["ingredient"].id,
+            quantity=item["quantity"],
+            unit=item["unit"]
+        )
+        session.add(recipe_ingredient)
+
     session.commit()
     print(f"Recipe '{name}' added successfully!\n")
     session.close()
