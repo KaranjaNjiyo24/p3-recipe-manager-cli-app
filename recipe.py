@@ -146,3 +146,38 @@ def view_recipe_details():
         ingredient = session.query(Ingredient).get(recipe_ingredient.ingredient_id)
         print(f"{ingredient.name}\t{recipe_ingredient.quantity}\t{recipe_ingredient.unit}")
     session.close()
+
+# Main CLI Function
+def main():
+    create_database()
+    while True:
+        print("\n--- Recipe Manager CLI ---")
+        print("1. Add User")
+        print("2. View Users")
+        print("3. Add Recipe")
+        print("4. View Recipes")
+        print("5. View Ingredients")
+        print("6. View Recipe Details")
+        print("7. Exit")
+        choice = get_user_input("Choose an option: ", input_type=int)
+
+        if choice == 1:
+            add_user()
+        elif choice == 2:
+            view_users()
+        elif choice == 3:
+            add_recipe()
+        elif choice == 4:
+            view_recipes()
+        elif choice == 5:
+            view_ingredients()
+        elif choice == 6:
+            view_recipe_details()
+        elif choice == 7:
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
