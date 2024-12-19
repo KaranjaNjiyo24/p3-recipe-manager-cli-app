@@ -82,3 +82,19 @@ def add_recipe():
     session.commit()
     print(f"Recipe '{name}' added successfully!\n")
     session.close()
+
+def view_recipes():
+    session = Session()
+    print("\n--- All Recipes ---")
+    recipes = session.query(Recipe).all()
+
+    if not recipes:
+        print("No recipes found! Add some recipes first.\n")
+        session.close()
+        return
+
+    print("ID\tName\tPrep Time\tCook Time\tServings\tUser")
+    for recipe in recipes:
+        user = recipe.user.username if recipe.user else "N/A"
+        print(f"{recipe.id}\t{recipe.name}\t{recipe.prep_time}\t{recipe.cook_time}\t{recipe.servings}\t{user}")
+    session.close()
